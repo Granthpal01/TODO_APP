@@ -31,4 +31,5 @@ def edit(task_id):
     return render_template('edit.html', task=tasks[task_id], task_id=task_id)
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=80, debug=True)
+
