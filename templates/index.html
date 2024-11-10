@@ -24,40 +24,59 @@
             border-radius: 5px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
-        .priority-high {
-            color: red;
+        .overdue {
+            border-left: 5px solid red;
         }
-        .priority-medium {
-            color: orange;
+        .high-priority {
+            border-left: 5px solid orange;
         }
-        .priority-low {
-            color: green;
+        .completed-task {
+            text-decoration: line-through;
+        }
+        .subtask-list {
+            padding-left: 20px;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1 class="text-center">To-Do List</h1>
-        <form action="/add" method="post" class="form-inline justify-content-center">
-            <input type="text" name="task" class="form-control mb-2 mr-sm-2" placeholder="Enter a new task" required>
+        <form action="/add" method="post" class="form-inline justify-content-center mb-4">
+            <input type="text" name="task" class="form-control mb-2 mr-sm-2" placeholder="Enter a new task">
+            <input type="date" name="due_date" class="form-control mb-2 mr-sm-2">
             <select name="priority" class="form-control mb-2 mr-sm-2">
                 <option value="High">High</option>
-                <option value="Medium">Medium</option>
+                <option value="Medium" selected>Medium</option>
                 <option value="Low">Low</option>
             </select>
-            <input type="date" name="due_date" class="form-control mb-2 mr-sm-2">
             <button type="submit" class="btn btn-primary mb-2">Add Task</button>
         </form>
+
+        <form action="/search" method="get" class="form-inline justify-content-center mb-4">
+            <input type="text" name="query" class="form-control mb-2 mr-sm-2" placeholder="Search tasks">
+            <button type="submit" class="btn btn-info mb-2">Search</button>
+        </form>
+
         <div class="task-list">
             {% for task in tasks %}
-            <div class="task-item">
+            <div class="task-item {% if task.completed %}completed-task{% endif %} {% if task.due_date and task.due_date < current_date %}overdue{% elif task.priority == 'High' %}high-priority{% endif %}">
                 <div>
-                    <span class="task-name">{{ task['task'] }}</span> -
-                    <span class="task-priority {% if task['priority'] == 'High' %}priority-high{% elif task['priority'] == 'Medium' %}priority-medium{% else %}priority-low{% endif %}">{{ task['priority'] }}</span> -
-                    <span class="task-due-date">{{ task['due_date'] }}</span> -
-                    <span class="task-status">{{ task['status'] }}</span>
+                    <input type="checkbox" onclick="window.location='/toggle_complete/{{ loop.index0 }}'" {% if task.completed %}checked{% endif %}>
+                    <span>{{ task.title }} (Due: {{ task.due_date or 'N/A' }})</span>
+                    <div class="subtask-list">
+                        {% for subtask in task.subtasks %}
+                        <div>
+                            <input type="checkbox" onclick="window.location='/toggle_subtask_complete/{{ loop.index0 }}/{{ loop.index1 }}'" {% if subtask.completed %}checked{% endif %}>
+                            <span>{{ subtask.title }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
                 </div>
                 <div>
+                    <form action="/add_subtask/{{ loop.index0 }}" method="post" class="d-inline">
+                        <input type="text" name="subtask" class="form-control d-inline" placeholder="Add subtask">
+                        <button type="submit" class="btn btn-sm btn-secondary">Add</button>
+                    </form>
                     <a href="/edit/{{ loop.index0 }}" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i> Edit</a>
                     <a href="/delete/{{ loop.index0 }}" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i> Delete</a>
                 </div>
