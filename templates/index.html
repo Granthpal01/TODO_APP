@@ -24,59 +24,38 @@
             border-radius: 5px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
-        .overdue {
-            border-left: 5px solid red;
-        }
-        .high-priority {
-            border-left: 5px solid orange;
-        }
         .completed-task {
             text-decoration: line-through;
+            color: #aaa;
         }
-        .subtask-list {
-            padding-left: 20px;
+        .high-priority {
+            border-left: 5px solid #ff0000;
+        }
+        .overdue {
+            background: #f8d7da;
+            color: #721c24;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1 class="text-center">To-Do List</h1>
-        <form action="/add" method="post" class="form-inline justify-content-center mb-4">
-            <input type="text" name="task" class="form-control mb-2 mr-sm-2" placeholder="Enter a new task">
-            <input type="date" name="due_date" class="form-control mb-2 mr-sm-2">
+        <form action="/add" method="post" class="form-inline justify-content-center">
+            <input type="text" name="task" class="form-control mb-2 mr-sm-2" placeholder="Enter a new task" required>
             <select name="priority" class="form-control mb-2 mr-sm-2">
-                <option value="High">High</option>
-                <option value="Medium" selected>Medium</option>
-                <option value="Low">Low</option>
+                <option value="Low">Low Priority</option>
+                <option value="Medium">Medium Priority</option>
+                <option value="High">High Priority</option>
             </select>
+            <input type="date" name="due_date" class="form-control mb-2 mr-sm-2">
             <button type="submit" class="btn btn-primary mb-2">Add Task</button>
         </form>
-
-        <form action="/search" method="get" class="form-inline justify-content-center mb-4">
-            <input type="text" name="query" class="form-control mb-2 mr-sm-2" placeholder="Search tasks">
-            <button type="submit" class="btn btn-info mb-2">Search</button>
-        </form>
-
         <div class="task-list">
             {% for task in tasks %}
             <div class="task-item {% if task.completed %}completed-task{% endif %} {% if task.due_date and task.due_date < current_date %}overdue{% elif task.priority == 'High' %}high-priority{% endif %}">
+                <span>{{ task.name }}</span>
                 <div>
-                    <input type="checkbox" onclick="window.location='/toggle_complete/{{ loop.index0 }}'" {% if task.completed %}checked{% endif %}>
-                    <span>{{ task.title }} (Due: {{ task.due_date or 'N/A' }})</span>
-                    <div class="subtask-list">
-                        {% for subtask in task.subtasks %}
-                        <div>
-                            <input type="checkbox" onclick="window.location='/toggle_subtask_complete/{{ loop.index0 }}/{{ loop.index1 }}'" {% if subtask.completed %}checked{% endif %}>
-                            <span>{{ subtask.title }}</span>
-                        </div>
-                        {% endfor %}
-                    </div>
-                </div>
-                <div>
-                    <form action="/add_subtask/{{ loop.index0 }}" method="post" class="d-inline">
-                        <input type="text" name="subtask" class="form-control d-inline" placeholder="Add subtask">
-                        <button type="submit" class="btn btn-sm btn-secondary">Add</button>
-                    </form>
+                    <a href="/complete/{{ loop.index0 }}" class="btn btn-success btn-sm"><i class="fas fa-check"></i> Complete</a>
                     <a href="/edit/{{ loop.index0 }}" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i> Edit</a>
                     <a href="/delete/{{ loop.index0 }}" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i> Delete</a>
                 </div>

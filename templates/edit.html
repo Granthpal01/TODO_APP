@@ -10,13 +10,13 @@
     <div class="container">
         <h1 class="text-center">Edit Task</h1>
         <form action="/edit/{{ task_id }}" method="post" class="form-group">
-            <input type="text" name="task" class="form-control mb-3" value="{{ task.title }}">
-            <input type="date" name="due_date" class="form-control mb-3" value="{{ task.due_date }}">
+            <input type="text" name="task" class="form-control mb-3" value="{{ task.name }}" required>
             <select name="priority" class="form-control mb-3">
-                <option value="High" {% if task.priority == 'High' %}selected{% endif %}>High</option>
-                <option value="Medium" {% if task.priority == 'Medium' %}selected{% endif %}>Medium</option>
-                <option value="Low" {% if task.priority == 'Low' %}selected{% endif %}>Low</option>
+                <option value="Low" {% if task.priority == 'Low' %}selected{% endif %}>Low Priority</option>
+                <option value="Medium" {% if task.priority == 'Medium' %}selected{% endif %}>Medium Priority</option>
+                <option value="High" {% if task.priority == 'High' %}selected{% endif %}>High Priority</option>
             </select>
+            <input type="date" name="due_date" class="form-control mb-3" value="{{ task.due_date }}">
             <button type="submit" class="btn btn-success">Update Task</button>
         </form>
         <a href="/" class="btn btn-secondary">Back to To-Do List</a>
